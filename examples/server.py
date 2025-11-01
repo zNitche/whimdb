@@ -6,7 +6,7 @@ from whimdb import Server
 
 
 def main():
-    server = Server()
+    server = Server(port=8080)
 
     try:
         server.run()
