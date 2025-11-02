@@ -1,5 +1,5 @@
 import socket
-from whimdb import Logger
+from whimdb.core import Logger
 
 
 class Client:

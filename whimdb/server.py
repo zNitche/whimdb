@@ -1,5 +1,5 @@
 import asyncio
-from whimdb import Logger
+from whimdb.core import Logger, Database
 from whimdb.tasks import ExpiredItemsCleanupTask
 
 
@@ -12,6 +12,9 @@ class Server:
             self.__client_handler, "0.0.0.0", self.__port)
         
         self.__logger = Logger(logger_name="SERVER")
+        self.__logger.init()
+
+        self.__databases: dict[int, Database] = {}
 
     def __register_tasks(self):
         tasks = [ExpiredItemsCleanupTask]
@@ -26,8 +29,6 @@ class Server:
         self.__logger.info(f"connection from {addr}")
 
     def run(self):
-        self.__logger.init()
-
         self.__register_tasks()
         self.__events_loop.create_task(self.__server_mainloop)
         
