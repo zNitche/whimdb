@@ -11,13 +11,17 @@ class Server:
         self.__port = port
 
         self.__events_loop = asyncio.get_event_loop()
-        self.__server_mainloop = asyncio.start_server(
-            self.__client_handler, self.__addr, self.__port)
+        self.__server_mainloop = self.__get_server_mainloop()
 
         self.__logger = Logger(logger_name="SERVER")
         self.__logger.init()
 
         self.__databases: dict[int, Database] = {}
+
+    def __get_server_mainloop(self):
+        return asyncio.start_server(client_connected_cb=self.__client_handler,
+                                    host=self.__addr, port=self.__port,
+                                    reuse_port=True, reuse_address=True)
 
     def __register_tasks(self):
         tasks = [ExpiredItemsCleanupTask]
@@ -32,9 +36,21 @@ class Server:
     async def __client_handler(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         addr = writer.get_extra_info('peername')
 
-        self.__logger.info(f"connection from {addr}")
+        try:
+            self.__logger.info(f"connection from {addr}")
 
-    def run(self):
+            data = await asyncio.wait_for(reader.read(10), timeout=0.5)
+
+            if data:
+                pass
+
+        except:
+            self.__logger.info(f"connection from {addr} has been closed")
+
+        writer.close()
+        await writer.wait_closed()
+
+    def start(self):
         if self.__debug:
             self.__logger.debug("debug mode enabled")
 

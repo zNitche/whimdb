@@ -9,7 +9,7 @@ def main():
     server = Server(port=8080)
 
     try:
-        server.run()
+        server.start()
     
     except KeyboardInterrupt:
         server.stop()

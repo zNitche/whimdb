@@ -4,7 +4,7 @@ from whimdb import Server
 
 def main(args: argparse.Namespace):
     server = Server(port=args.port, addr=args.addr, debug=args.debug)
-    server.run()
+    server.start()
 
 
 def get_args():
