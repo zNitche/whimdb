@@ -1,6 +1,8 @@
 import asyncio
-from whimdb.core import Logger, Database
+from whimdb.core import Logger, Database, Packet
 from whimdb.tasks import ExpiredItemsCleanupTask
+from whimdb.types import PacketTypeEnum, PacketResponseContent
+from whimdb.core import communication
 
 
 class Server:
@@ -39,16 +41,28 @@ class Server:
         try:
             self.__logger.info(f"connection from {addr}")
 
-            data = await asyncio.wait_for(reader.read(10), timeout=0.5)
+            packet = await communication.load_packet_from_stream(reader=reader)
 
-            if data:
-                pass
+            if not packet:
+                raise Exception("Packet is None")
+            
+            search_key = packet.content.key # type: ignore
+            response_packet = Packet(type=PacketTypeEnum.RESPONSE,
+                                      response_content=PacketResponseContent(value=search_key))
 
         except:
-            self.__logger.info(f"connection from {addr} has been closed")
+            self.__logger.exception(f"error while processing connection from {addr}")
+
+            response_packet = Packet(type=PacketTypeEnum.ERROR)
+
+        writer.write(response_packet.to_bytes())
+        await writer.drain()
 
         writer.close()
         await writer.wait_closed()
+
+        self.__logger.info(f"connection from {addr} has been closed")
+
 
     def start(self):
         if self.__debug:
