@@ -1,6 +1,6 @@
 import socket
 from whimdb.core import Logger, Packet
-from whimdb.types import PacketTypeEnum, PacketRequestContent
+from whimdb.types import PacketTypeEnum, PacketContent
 from whimdb.core import communication
 
 
@@ -32,8 +32,8 @@ class Client:
         self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
 
     def query(self, key: str, search_regex: str  | None = None):
-        request_content = PacketRequestContent(key=key, search_regex=search_regex)
-        packet = Packet(type=PacketTypeEnum.REQUEST, request_content=request_content)
+        request_content = PacketContent(key=key, search_regex=search_regex)
+        packet = Packet(type=PacketTypeEnum.REQUEST, content=request_content)
 
         response = self.__send_packet(packet=packet)
 

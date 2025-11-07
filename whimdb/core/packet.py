@@ -1,28 +1,14 @@
 import json
-from whimdb.types import PacketTypeEnum, PacketResponseContent, PacketRequestContent
+from whimdb.types import PacketTypeEnum, PacketContent
 from whimdb.core import communication
 
 
 class Packet:
     def __init__(self, type: PacketTypeEnum,
-                 response_content: PacketResponseContent | None = None,
-                 request_content: PacketRequestContent | None = None):
+                 content: PacketContent | None = None):
 
         self.type = type
-        self.__response_content = response_content
-        self.__request_content = request_content
-
-    @property
-    def content(self):
-        match self.type:
-            case PacketTypeEnum.REQUEST:
-                return self.__request_content
-
-            case PacketTypeEnum.RESPONSE:
-                return self.__response_content
-
-            case _:
-                return None
+        self.content = content
 
     @staticmethod
     def from_bytes(buff: bytes):
@@ -34,16 +20,8 @@ class Packet:
 
         body = buff[packet_type_length:].decode()
 
-        if packet_type == PacketTypeEnum.REQUEST:
-            request_content = PacketRequestContent(**json.loads(body))
-            return Packet(type=packet_type, request_content=request_content)
-
-        elif packet_type == PacketTypeEnum.RESPONSE:
-            response_content = PacketResponseContent(**json.loads(body))
-            return Packet(type=packet_type, response_content=response_content)
-
-        else:
-            return Packet(type=PacketTypeEnum.ERROR)
+        packet_content = PacketContent(**json.loads(body))
+        return Packet(type=packet_type, content=packet_content)
         
     
     def to_bytes(self):
