@@ -35,6 +35,44 @@ class Server:
             self.__logger.info(
                 f"added background task: {instance.__class__.__name__}")
 
+    def __process_packet(self, packet_type: PacketTypeEnum, packet_content: PacketContent):
+        database_id = packet_content.database_id
+
+        if database_id is None:
+            raise Exception(
+                "error while processing packet, database_id is None")
+
+        database_for_id = self.__databases.get(database_id)
+
+        if not database_for_id:
+            self.__databases[database_id] = Database()
+
+        database_for_id = self.__databases[database_id]
+        db_key = packet_content.key
+
+        match packet_type:
+            case PacketTypeEnum.QUERY:
+                if not db_key:
+                    raise Exception("can't set None db key")
+                
+                value = database_for_id.query(key=db_key)
+                response_packet = Packet(type=PacketTypeEnum.RESPONSE,
+                                         content=PacketContent(value=value))
+
+            case PacketTypeEnum.SET:
+                db_value = packet_content.value
+
+                if not db_key:
+                    raise Exception("can't set None db key")
+
+                database_for_id.set(key=db_key, value=db_value)
+                response_packet = Packet(type=PacketTypeEnum.SUCCESS)
+
+            case _:
+                raise Exception("unsupported packet type")
+
+        return response_packet
+
     async def __client_handler(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         addr = writer.get_extra_info('peername')
 
@@ -43,12 +81,12 @@ class Server:
 
             packet = await communication.load_packet_from_stream(reader=reader)
 
-            if not packet:
-                raise Exception("Packet is None")
+            if not packet or not packet.content:
+                raise Exception("Packet or its content is None")
 
-            search_key = packet.content.key  # type: ignore
-            response_packet = Packet(type=PacketTypeEnum.RESPONSE,
-                                     content=PacketContent(value=search_key))
+            response_packet = self.__process_packet(
+                packet_type=packet.type,
+                packet_content=packet.content)
 
         except:
             self.__logger.exception(
