@@ -31,6 +31,6 @@ class Packet:
         type_buff = communication.int_to_bytes(self.type.value, length=2)
 
         content_buff = type_buff + body_buff
-        size_buff = communication.int_to_bytes(val=len(content_buff))
+        size_buff = communication.int_to_bytes(val=len(content_buff), length=2)
 
         return size_buff + content_buff

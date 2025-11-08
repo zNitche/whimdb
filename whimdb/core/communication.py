@@ -37,7 +37,7 @@ def read_from_socket(socket: socket.socket, length: int,
 def load_packet_from_socket(socket: socket.socket):
     from whimdb.core import Packet
 
-    size_buffer = read_from_socket(socket=socket, length=4)
+    size_buffer = read_from_socket(socket=socket, length=2)
     size = int_from_bytes(size_buffer)
 
     if not size:
@@ -51,7 +51,7 @@ def load_packet_from_socket(socket: socket.socket):
 async def load_packet_from_stream(reader: asyncio.StreamReader):
     from whimdb.core import Packet
 
-    size_buffer = await read_from_stream(reader=reader, length=4)
+    size_buffer = await read_from_stream(reader=reader, length=2)
     size = int_from_bytes(size_buffer)
 
     if not size:
