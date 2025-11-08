@@ -50,14 +50,19 @@ class Server:
         database_for_id = self.__databases[database_id]
         db_key = packet_content.key
 
+        self.__logger.debug(
+            f"got packet with type {packet_type.name} -> {packet_content}")
+
         match packet_type:
             case PacketTypeEnum.QUERY:
                 if not db_key:
                     raise Exception("can't set None db key")
-                
+
                 value = database_for_id.query(key=db_key)
                 response_packet = Packet(type=PacketTypeEnum.RESPONSE,
                                          content=PacketContent(value=value))
+                
+                self.__logger.debug(f"query response: {response_packet}")
 
             case PacketTypeEnum.SET:
                 db_value = packet_content.value
@@ -67,6 +72,8 @@ class Server:
 
                 database_for_id.set(key=db_key, value=db_value)
                 response_packet = Packet(type=PacketTypeEnum.SUCCESS)
+
+                self.__logger.debug(f"set response: {response_packet}")
 
             case _:
                 raise Exception("unsupported packet type")
@@ -94,17 +101,20 @@ class Server:
 
             response_packet = Packet(type=PacketTypeEnum.ERROR)
 
+        self.__logger.debug(f"sending {response_packet} to {addr}")
+
         writer.write(response_packet.to_bytes())
         await writer.drain()
+
+        self.__logger.debug(f"closing connection with {addr}")
 
         writer.close()
         await writer.wait_closed()
 
-        self.__logger.info(f"connection from {addr} has been closed")
+        self.__logger.info(f"connection with {addr} has been closed")
 
     def start(self):
-        if self.__debug:
-            self.__logger.debug("debug mode enabled")
+        self.__logger.debug("debug mode enabled")
 
         self.__register_tasks()
         self.__events_loop.create_task(self.__server_mainloop)
