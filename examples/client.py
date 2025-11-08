@@ -1,17 +1,20 @@
 import sys
+
 sys.path.append(".")
 
 from whimdb import Client
 
 
 def main():
-    client = Client(addr="0.0.0.0", port=8080, debug=True)
+    client = Client(database_id=0, addr="0.0.0.0", port=8080, debug=True)
 
-    with client:
-        response = client.query(key="123")
+    s_response = client.set(key="test_key", value="test_key")
+    q1_response = client.query(key="123")
+    q2_response = client.query(key="test_key")
 
-        if response:
-            print(response.content)
+    print(f"s_response: {s_response}")
+    print(f"q1_response: {q1_response}")
+    print(f"q2_response: {q2_response}")
 
 
 if __name__ == "__main__":
