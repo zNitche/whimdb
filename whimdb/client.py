@@ -10,7 +10,9 @@ class Client:
                  port: int,
                  timeout: int = 2,
                  debug: bool = False):
+
         self.__debug = debug
+        self.__timeout = timeout
 
         self.__logger = Logger()
         self.__logger.init(debug=self.__debug)
@@ -18,18 +20,22 @@ class Client:
         self.addr = addr
         self.port = port
 
-        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__socket.settimeout(timeout)
+    def __get_socket(self):
+        soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        soc.settimeout(self.__timeout)
 
-    def __enter__(self):
-        self.__socket.connect((self.addr, self.port))
-        self.__logger.debug(f"connected to {self.addr}:{self.port}")
+        return soc
 
-        return self
+    @contextmanager
+    def __socket_context(self):
+        with self.__get_socket() as socket:
+            socket.connect((self.addr, self.port))
+            self.__logger.debug(f"connected to {self.addr}:{self.port}")
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.__socket.close()
-        self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
+            yield socket
+
+            socket.close()
+            self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
 
     def query(self, key: str, search_regex: str  | None = None):
         request_content = PacketContent(key=key, search_regex=search_regex)
@@ -42,13 +48,15 @@ class Client:
     def __send_packet(self, packet: Packet):
         response = None
 
-        try:
-            self.__socket.sendall(packet.to_bytes())
-            self.__logger.debug("packet has been sent")
+        with self.__socket_context() as socket:
+            try:
+                socket.sendall(packet.to_bytes())
+                self.__logger.debug("packet has been sent")
 
-            response = communication.load_packet_from_socket(socket=self.__socket)
+                response = communication.load_packet_from_socket(
+                    socket=socket)
 
-        except:
-            self.__logger.exception("error while sending packet")
+            except:
+                self.__logger.exception("error while sending packet")
 
         return response
