@@ -34,3 +34,6 @@ class Packet:
         size_buff = communication.int_to_bytes(val=len(content_buff), length=2)
 
         return size_buff + content_buff
+    
+    def __str__(self):
+        return f"{self.type.name}/{self.content}"
