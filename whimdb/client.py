@@ -1,3 +1,5 @@
+from typing import Any
+from contextlib import contextmanager
 import socket
 from whimdb.core import Logger, Packet
 from whimdb.types import PacketTypeEnum, PacketContent
@@ -6,6 +8,7 @@ from whimdb.core import communication
 
 class Client:
     def __init__(self,
+                 database_id: int,
                  addr: str,
                  port: int,
                  timeout: int = 2,
@@ -16,6 +19,8 @@ class Client:
 
         self.__logger = Logger()
         self.__logger.init(debug=self.__debug)
+
+        self.database_id = database_id
 
         self.addr = addr
         self.port = port
@@ -37,9 +42,19 @@ class Client:
             socket.close()
             self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
 
-    def query(self, key: str, search_regex: str  | None = None):
-        request_content = PacketContent(key=key, search_regex=search_regex)
-        packet = Packet(type=PacketTypeEnum.REQUEST, content=request_content)
+    def query(self, key: str, search_regex: str | None = None):
+        request_content = PacketContent(
+            key=key, database_id=self.database_id, search_regex=search_regex)
+        packet = Packet(type=PacketTypeEnum.QUERY, content=request_content)
+
+        response = self.__send_packet(packet=packet)
+
+        return response
+
+    def set(self, key: str, value: Any | None):
+        request_content = PacketContent(
+            key=key, database_id=self.database_id, value=value)
+        packet = Packet(type=PacketTypeEnum.SET, content=request_content)
 
         response = self.__send_packet(packet=packet)
 
