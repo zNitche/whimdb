@@ -33,14 +33,18 @@ class Client:
 
     @contextmanager
     def __socket_context(self):
-        with self.__get_socket() as socket:
-            socket.connect((self.addr, self.port))
-            self.__logger.debug(f"connected to {self.addr}:{self.port}")
+        try:
+            with self.__get_socket() as socket:
+                socket.connect((self.addr, self.port))
+                self.__logger.debug(f"connected to {self.addr}:{self.port}")
 
-            yield socket
+                yield socket
 
-            socket.close()
-            self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
+                socket.close()
+                self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
+        
+        except TimeoutError:
+            raise Exception(f"connection timeout (exceeded {self.__timeout})")
 
     def query(self, key: str | None = None, search_regex: str | None = None):
         if not key and not search_regex:
@@ -76,5 +80,8 @@ class Client:
 
             except:
                 self.__logger.exception("error while sending packet")
+
+        if response and response.type == PacketTypeEnum.ERROR:
+            raise Exception("received Error type packet")
 
         return response
