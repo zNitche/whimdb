@@ -74,7 +74,7 @@ class Server:
                 if not db_key:
                     raise Exception("can't set None db key")
 
-                database_for_id.set(key=db_key, value=db_value)
+                database_for_id.set(key=db_key, value=db_value, ttl=packet_content.ttl)
                 response_packet = Packet(type=PacketTypeEnum.SUCCESS)
 
                 self.__logger.debug(f"set response: {response_packet}")

@@ -58,9 +58,9 @@ class Client:
 
         return response
 
-    def set(self, key: str, value: Any | None):
+    def set(self, key: str, value: Any | None, ttl: int | None = None):
         request_content = PacketContent(
-            key=key, database_id=self.database_id, value=value)
+            key=key, database_id=self.database_id, value=value, ttl=ttl)
         packet = Packet(type=PacketTypeEnum.SET, content=request_content)
 
         response = self.__send_packet(packet=packet)

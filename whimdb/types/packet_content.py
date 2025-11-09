@@ -8,6 +8,7 @@ class PacketContent:
     value: Any | None = None
     search_regex: str | None = None
     database_id: int | None = None
+    ttl: int | None = None
 
     def dump(self) -> dict[str, Any]:
         return self.__dict__
