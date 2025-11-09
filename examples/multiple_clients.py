@@ -12,14 +12,17 @@ def run_client(client_id: int):
     print(f"started client {client_id}")
     start_time = time.time()
 
-    response = client.query(key="123")
+    s_response = client.set(key=f"test_key_{client_id}", value="test_value")
+    s_response = client.set(key=f"test2_key_{client_id}", value="test2_value")
+    q1_response = client.query(search_regex="(.*?)")
+    q2_response = client.query(key=f"test_key_{client_id}")
 
     end_time = round(time.time() - start_time, 2)
-    print(f"request took: {end_time},res: {response}")
+    print(f"request took: {end_time}")
 
 
 def main():
-    clients_count = 10
+    clients_count = 300
 
     clients_threads = [threading.Thread(
         target=run_client, args=[id]) for id in range(clients_count)]
