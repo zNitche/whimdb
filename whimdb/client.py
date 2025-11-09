@@ -44,7 +44,7 @@ class Client:
                 self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
         
         except TimeoutError:
-            raise Exception(f"connection timeout (exceeded {self.__timeout})")
+            raise Exception(f"connection timeout (exceeded {self.__timeout}s)")
 
     def query(self, key: str | None = None, search_regex: str | None = None):
         if not key and not search_regex:

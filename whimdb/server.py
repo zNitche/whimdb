@@ -105,10 +105,14 @@ class Server:
 
             response_packet = Packet(type=PacketTypeEnum.ERROR)
 
-        self.__logger.debug(f"sending {response_packet} to {addr}")
+        try:
+            self.__logger.debug(f"sending {response_packet} to {addr}")
 
-        writer.write(response_packet.to_bytes())
-        await writer.drain()
+            writer.write(response_packet.to_bytes())
+            await writer.drain()
+
+        except:
+            self.__logger.exception("error while sending packet to client")
 
         self.__logger.debug(f"closing connection with {addr}")
 
