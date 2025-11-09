@@ -13,7 +13,7 @@ def run_client(client_id: int):
     start_time = time.time()
 
     s_response = client.set(key=f"test_key_{client_id}", value="test_value")
-    s_response = client.set(key=f"test2_key_{client_id}", value="test2_value")
+    s_response = client.set(key=f"test2_key_{client_id}", value="test2_value", ttl=10)
     q1_response = client.query(search_regex="(.*?)")
     q2_response = client.query(key=f"test_key_{client_id}")
 
@@ -22,7 +22,7 @@ def run_client(client_id: int):
 
 
 def main():
-    clients_count = 300
+    clients_count = 500
 
     clients_threads = [threading.Thread(
         target=run_client, args=[id]) for id in range(clients_count)]

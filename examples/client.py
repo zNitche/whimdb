@@ -10,6 +10,7 @@ def main():
 
     s_response = client.set(key="test_key", value="test_value")
     s_response = client.set(key="test2_key", value="test2_value")
+    s_response = client.set(key="test3_key", value="test3_value", ttl=10)
     q1_response = client.query(search_regex="(.*?)")
     q2_response = client.query(key="test_key")
 
