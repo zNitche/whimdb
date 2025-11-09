@@ -26,14 +26,14 @@ class Server:
                                     reuse_port=True, reuse_address=True)
 
     def __register_tasks(self):
-        tasks = [ExpiredItemsCleanupTask]
+        tasks = [ExpiredItemsCleanupTask(
+            dbs=self.__databases, debug=self.__debug)]
 
         for task in tasks:
-            instance = task()
-            self.__events_loop.create_task(instance.run())
+            self.__events_loop.create_task(task.run())
 
             self.__logger.info(
-                f"added background task: {instance.__class__.__name__}")
+                f"added background task: {task.__class__.__name__}")
 
     def __process_packet(self, packet_type: PacketTypeEnum, packet_content: PacketContent):
         database_id = packet_content.database_id
