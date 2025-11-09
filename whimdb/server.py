@@ -55,13 +55,17 @@ class Server:
 
         match packet_type:
             case PacketTypeEnum.QUERY:
-                if not db_key:
-                    raise Exception("can't set None db key")
+                search_regex = packet_content.search_regex
 
-                value = database_for_id.query(key=db_key)
+                if not db_key and not search_regex:
+                    raise Exception("both key and search_regex can't be empty")
+
+                value = database_for_id.query(
+                    key=db_key, regex_string=search_regex)
+
                 response_packet = Packet(type=PacketTypeEnum.RESPONSE,
                                          content=PacketContent(value=value))
-                
+
                 self.__logger.debug(f"query response: {response_packet}")
 
             case PacketTypeEnum.SET:

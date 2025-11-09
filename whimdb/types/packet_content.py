@@ -4,9 +4,9 @@ from dataclasses import dataclass
 
 @dataclass
 class PacketContent:
-    value: str | None = None
-    search_regex: str | None = None
     key: str | None = None
+    value: Any | None = None
+    search_regex: str | None = None
     database_id: int | None = None
 
     def dump(self) -> dict[str, Any]:

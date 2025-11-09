@@ -42,7 +42,10 @@ class Client:
             socket.close()
             self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
 
-    def query(self, key: str, search_regex: str | None = None):
+    def query(self, key: str | None = None, search_regex: str | None = None):
+        if not key and not search_regex:
+            raise Exception("both key and search_regex can't be empty")
+
         request_content = PacketContent(
             key=key, database_id=self.database_id, search_regex=search_regex)
         packet = Packet(type=PacketTypeEnum.QUERY, content=request_content)
