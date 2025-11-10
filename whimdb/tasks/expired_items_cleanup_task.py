@@ -13,7 +13,6 @@ class ExpiredItemsCleanupTask(TaskBase):
     async def run(self):
         while True:
             current_time = time.time()
-            removed_count = 0
 
             for db_id in self.__dbs:
                 keys_to_remove: list[str] = []
@@ -30,9 +29,10 @@ class ExpiredItemsCleanupTask(TaskBase):
 
                 for key in keys_to_remove:
                     del db_content[key]
-                    removed_count += 1
 
-            if removed_count > 0:
-                self._logger.info(f"done, removed {removed_count}")
+                removed_count = len(keys_to_remove)
 
-            await asyncio.sleep(2)
+                if removed_count > 0:
+                    self._logger.info(f"done, removed {removed_count} items from db id:{db_id}")
+
+            await asyncio.sleep(10)
