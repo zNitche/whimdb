@@ -18,7 +18,9 @@ class Database:
         self.__content[key] = DatabaseItem(
             value=value, created_at=created_at, ttl=ttl)
 
-    def query(self, key: str | None = None, regex_string: str | None = None):
+    def query(self, key: str | None = None,
+              regex_string: str | None = None) -> list[DatabaseItem] | None:
+
         if not key and not regex_string:
             raise Exception("both key and search_regex can't be empty")
 
@@ -28,11 +30,11 @@ class Database:
             if not db_item:
                 return None
 
-            return db_item.value
+            return [db_item]
 
         regex = re.compile(fr"{regex_string}")
 
-        results = [self.__content[key].value
+        results = [self.__content[key]
                    for key in self.__content.keys() if regex.search(key)]
 
         return results

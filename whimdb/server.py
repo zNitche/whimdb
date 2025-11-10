@@ -21,9 +21,12 @@ class Server:
         self.__databases: dict[int, Database] = {}
 
     def __get_server_mainloop(self):
+        limit_in_bytes = 5242880 # 5MB
+
         return asyncio.start_server(client_connected_cb=self.__client_handler,
                                     host=self.__addr, port=self.__port,
-                                    reuse_port=True, reuse_address=True)
+                                    reuse_port=True, reuse_address=True,
+                                    limit=limit_in_bytes)
 
     def __register_tasks(self):
         tasks = [ExpiredItemsCleanupTask(
@@ -60,11 +63,14 @@ class Server:
                 if not db_key and not search_regex:
                     raise Exception("both key and search_regex can't be empty")
 
-                value = database_for_id.query(
+                db_items = database_for_id.query(
                     key=db_key, regex_string=search_regex)
+                
+                if db_items is not None:
+                    db_items = [item.dump() for item in db_items]
 
                 response_packet = Packet(type=PacketTypeEnum.RESPONSE,
-                                         content=PacketContent(value=value))
+                                         content=PacketContent(value=db_items))
 
                 self.__logger.debug(f"query response: {response_packet}")
 
@@ -74,7 +80,8 @@ class Server:
                 if not db_key:
                     raise Exception("can't set None db key")
 
-                database_for_id.set(key=db_key, value=db_value, ttl=packet_content.ttl)
+                database_for_id.set(
+                    key=db_key, value=db_value, ttl=packet_content.ttl)
                 response_packet = Packet(type=PacketTypeEnum.SUCCESS)
 
                 self.__logger.debug(f"set response: {response_packet}")

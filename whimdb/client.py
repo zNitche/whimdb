@@ -1,8 +1,9 @@
 from typing import Any
 from contextlib import contextmanager
 import socket
+import time
 from whimdb.core import Logger, Packet
-from whimdb.types import PacketTypeEnum, PacketContent
+from whimdb.types import PacketTypeEnum, PacketContent, DatabaseItem
 from whimdb.core import communication
 
 
@@ -41,8 +42,9 @@ class Client:
                 yield socket
 
                 socket.close()
-                self.__logger.debug(f"disconnected from {self.addr}:{self.port}")
-        
+                self.__logger.debug(
+                    f"disconnected from {self.addr}:{self.port}")
+
         except TimeoutError:
             raise Exception(f"connection timeout (exceeded {self.__timeout}s)")
 
@@ -54,7 +56,8 @@ class Client:
             key=key, database_id=self.database_id, search_regex=search_regex)
         packet = Packet(type=PacketTypeEnum.QUERY, content=request_content)
 
-        response = self.__send_packet(packet=packet)
+        response_packet = self.__send_packet(packet=packet)
+        response = self.__packet_post_processing(packet=response_packet)
 
         return response
 
@@ -63,9 +66,30 @@ class Client:
             key=key, database_id=self.database_id, value=value, ttl=ttl)
         packet = Packet(type=PacketTypeEnum.SET, content=request_content)
 
-        response = self.__send_packet(packet=packet)
+        response_packet = self.__send_packet(packet=packet)
+        response = self.__packet_post_processing(packet=response_packet)
 
         return response
+
+    def __packet_post_processing(self, packet: Packet | None):
+        if not packet or not packet.content:
+            return None
+
+        if not packet.content.value:
+            return None
+
+        return [self.__process_database_item(item) for item in packet.content.value]
+
+    def __process_database_item(self, value: Any):
+        item = DatabaseItem(**value)
+        current_time = time.time()
+
+        is_expired = item.ttl is not None and (
+            (item.created_at + item.ttl) < current_time)
+
+        item.is_expired = is_expired
+
+        return item
 
     def __send_packet(self, packet: Packet):
         response = None
