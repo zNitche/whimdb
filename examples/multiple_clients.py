@@ -18,11 +18,12 @@ def run_client(client_id: int):
     q2_response = client.query(key=f"test_key_{client_id}")
 
     end_time = round(time.time() - start_time, 2)
-    print(f"request took: {end_time}")
+    print(f"[{client_id}] request took: {end_time}")
 
 
 def main():
-    clients_count = 500
+    # 300 client * 4 requests per client = 1200 simultaneous requests
+    clients_count = 300
 
     clients_threads = [threading.Thread(
         target=run_client, args=[id]) for id in range(clients_count)]
