@@ -1,7 +1,7 @@
 import asyncio
 from whimdb.core import Logger, Database, Packet
 from whimdb.tasks import ExpiredItemsCleanupTask
-from whimdb.types import PacketTypeEnum, PacketContent
+from whimdb.types import PacketTypeEnum, PacketContent, Request, Response, ResponseDatabaseItem
 from whimdb.core import communication
 
 
@@ -21,7 +21,7 @@ class Server:
         self.__databases: dict[int, Database] = {}
 
     def __get_server_mainloop(self):
-        limit_in_bytes = 5242880 # 5MB
+        limit_in_bytes = 5242880  # 5MB
 
         return asyncio.start_server(client_connected_cb=self.__client_handler,
                                     host=self.__addr, port=self.__port,
@@ -38,8 +38,11 @@ class Server:
             self.__logger.info(
                 f"added background task: {task.__class__.__name__}")
 
-    def __process_packet(self, packet_type: PacketTypeEnum, packet_content: PacketContent):
-        database_id = packet_content.database_id
+    def __process_request(self, packet_type: PacketTypeEnum, request: Request):
+        response_packet_type = PacketTypeEnum.ERROR
+        response_packet_reponse = None
+
+        database_id = request.database_id
 
         if database_id is None:
             raise Exception(
@@ -51,43 +54,48 @@ class Server:
             self.__databases[database_id] = Database()
 
         database_for_id = self.__databases[database_id]
-        db_key = packet_content.key
+        db_key = request.key
 
         self.__logger.debug(
-            f"got packet with type {packet_type.name} -> {packet_content}")
+            f"got packet with type {packet_type.name} -> {request}")
 
         match packet_type:
             case PacketTypeEnum.QUERY:
-                search_regex = packet_content.search_regex
+                search_regex = request.search_regex
 
                 if not db_key and not search_regex:
                     raise Exception("both key and search_regex can't be empty")
 
                 db_items = database_for_id.query(
                     key=db_key, regex_string=search_regex)
-                
+
+                response_db_items = None
+
                 if db_items is not None:
-                    db_items = [item.dump() for item in db_items]
+                    response_db_items = [ResponseDatabaseItem(
+                        **item.__dict__) for item in db_items]
 
-                response_packet = Packet(type=PacketTypeEnum.RESPONSE,
-                                         content=PacketContent(value=db_items))
-
-                self.__logger.debug(f"query response: {response_packet}")
+                response_packet_type = PacketTypeEnum.RESPONSE
+                response_packet_reponse = Response(value=response_db_items)
 
             case PacketTypeEnum.SET:
-                db_value = packet_content.value
+                db_value = request.value
 
                 if not db_key:
                     raise Exception("can't set None db key")
 
                 database_for_id.set(
-                    key=db_key, value=db_value, ttl=packet_content.ttl)
-                response_packet = Packet(type=PacketTypeEnum.SUCCESS)
+                    key=db_key, value=db_value, ttl=request.ttl)
 
-                self.__logger.debug(f"set response: {response_packet}")
+                response_packet_type = PacketTypeEnum.SUCCESS
 
             case _:
                 raise Exception("unsupported packet type")
+
+        response_packet = Packet(type=response_packet_type, content=PacketContent(
+            response=response_packet_reponse))
+
+        self.__logger.debug(f"response: {response_packet}")
 
         return response_packet
 
@@ -99,12 +107,12 @@ class Server:
 
             packet = await communication.load_packet_from_stream(reader=reader)
 
-            if not packet or not packet.content:
+            if not packet or not packet.content or not packet.content.request:
                 raise Exception("Packet or its content is None")
 
-            response_packet = self.__process_packet(
+            response_packet = self.__process_request(
                 packet_type=packet.type,
-                packet_content=packet.content)
+                request=packet.content.request)
 
         except:
             self.__logger.exception(

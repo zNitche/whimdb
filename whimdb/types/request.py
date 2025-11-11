@@ -1,0 +1,12 @@
+from typing import Any
+from dataclasses import dataclass
+from whimdb.types import SerializableObjectMixin
+
+
+@dataclass
+class Request(SerializableObjectMixin):
+    database_id: int
+    key: str | None = None
+    value: Any = None
+    search_regex: str | None = None
+    ttl: int | None = None

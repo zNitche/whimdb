@@ -3,7 +3,7 @@ from contextlib import contextmanager
 import socket
 import time
 from whimdb.core import Logger, Packet
-from whimdb.types import PacketTypeEnum, PacketContent, DatabaseItem
+from whimdb.types import PacketTypeEnum, PacketContent, Request, ResponseDatabaseItem, Response
 from whimdb.core import communication
 
 
@@ -52,36 +52,42 @@ class Client:
         if not key and not search_regex:
             raise Exception("both key and search_regex can't be empty")
 
-        request_content = PacketContent(
+        request_content = Request(
             key=key, database_id=self.database_id, search_regex=search_regex)
-        packet = Packet(type=PacketTypeEnum.QUERY, content=request_content)
 
-        response_packet = self.__send_packet(packet=packet)
-        response = self.__packet_post_processing(packet=response_packet)
+        response_packet = self.__send_packet(packet=Packet(
+            type=PacketTypeEnum.QUERY, content=PacketContent(request=request_content)))
+
+        if not response_packet or not response_packet.content:
+            return None
+
+        response = self.__response_post_processing(
+            response=response_packet.content.response)
 
         return response
 
     def set(self, key: str, value: Any | None, ttl: int | None = None):
-        request_content = PacketContent(
+        request_content = Request(
             key=key, database_id=self.database_id, value=value, ttl=ttl)
-        packet = Packet(type=PacketTypeEnum.SET, content=request_content)
+
+        packet = Packet(type=PacketTypeEnum.SET,
+                        content=PacketContent(request=request_content))
 
         response_packet = self.__send_packet(packet=packet)
-        response = self.__packet_post_processing(packet=response_packet)
 
-        return response
-
-    def __packet_post_processing(self, packet: Packet | None):
-        if not packet or not packet.content:
+        if not response_packet:
             return None
 
-        if not packet.content.value:
+        return response_packet.type
+
+    def __response_post_processing(self, response: Response | None):
+        if not response or not response.value:
             return None
 
-        return [self.__process_database_item(item) for item in packet.content.value]
+        return [self.__process_response_item(item) for item in response.value]
 
-    def __process_database_item(self, value: Any):
-        item = DatabaseItem(**value)
+    def __process_response_item(self, value: Any):
+        item = ResponseDatabaseItem(**value)
         current_time = time.time()
 
         is_expired = item.ttl is not None and (

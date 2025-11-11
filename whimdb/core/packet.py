@@ -20,7 +20,7 @@ class Packet:
 
         body = buff[packet_type_length:].decode()
 
-        packet_content = PacketContent(**json.loads(body))
+        packet_content = PacketContent.load(**json.loads(body))
         return Packet(type=packet_type, content=packet_content)
         
     
