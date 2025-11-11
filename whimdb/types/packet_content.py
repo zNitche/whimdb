@@ -1,9 +1,10 @@
 from typing import Any
 from dataclasses import dataclass
+from whimdb.types import SerializableObjectMixin
 
 
 @dataclass
-class PacketContent:
+class PacketContent(SerializableObjectMixin):
     # server/client consumable
     key: str | None = None
     value: Any | None = None
@@ -12,9 +13,3 @@ class PacketContent:
     search_regex: str | None = None
     database_id: int | None = None
     ttl: int | None = None
-
-    def dump(self) -> dict[str, Any]:
-        return self.__dict__
-    
-    def __str__(self) -> str:
-        return str(self.__dict__)

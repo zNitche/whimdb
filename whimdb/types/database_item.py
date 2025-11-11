@@ -1,10 +1,10 @@
 from typing import Any
-import json
 from dataclasses import dataclass
+from whimdb.types import SerializableObjectMixin
 
 
 @dataclass
-class DatabaseItem:
+class DatabaseItem(SerializableObjectMixin):
     # server/client consumable
     value: Any
     created_at: int | float
@@ -12,6 +12,3 @@ class DatabaseItem:
 
     # client consumable
     is_expired: bool | None = None
-
-    def dump(self) -> dict[str, Any]:
-        return self.__dict__
