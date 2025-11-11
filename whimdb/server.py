@@ -1,7 +1,8 @@
 import asyncio
 from whimdb.core import Logger, Database, Packet
 from whimdb.tasks import ExpiredItemsCleanupTask
-from whimdb.dataclasses import PacketTypeEnum, PacketContent, Request, Response, ResponseDatabaseItem
+from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent, \
+    Request, Response, ResponseDatabaseItem
 from whimdb.core import communication
 
 

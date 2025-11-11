@@ -1,0 +1,1 @@
+from whimdb.dataclasses.mixins.serializable_object_mixin import SerializableObjectMixin

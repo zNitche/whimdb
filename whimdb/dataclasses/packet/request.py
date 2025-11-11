@@ -1,6 +1,6 @@
 from typing import Any
 from dataclasses import dataclass
-from whimdb.dataclasses import SerializableObjectMixin
+from whimdb.dataclasses.mixins import SerializableObjectMixin
 
 
 @dataclass

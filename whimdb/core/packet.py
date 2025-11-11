@@ -1,5 +1,5 @@
 import json
-from whimdb.dataclasses import PacketTypeEnum, PacketContent
+from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent
 from whimdb.core import communication
 
 
