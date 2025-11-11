@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
-from whimdb.types import SerializableObjectMixin, ResponseDatabaseItem
+from whimdb.dataclasses import SerializableObjectMixin, ResponseDatabaseItem
 
 
 @dataclass

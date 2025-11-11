@@ -1,7 +1,7 @@
 from typing import Any
 import re
 import time
-from whimdb.types import DatabaseItem
+from whimdb.dataclasses import DatabaseItem
 
 
 class Database:
