@@ -39,10 +39,48 @@ class Server:
             self.__logger.info(
                 f"added background task: {task.__class__.__name__}")
 
-    def __process_request(self, packet_type: PacketTypeEnum, request: Request):
-        response_packet_type = PacketTypeEnum.ERROR
-        response_packet_reponse = None
+    def __process_query_request(self, database: Database, request: Request):
+        db_key = request.key
+        search_regex = request.search_regex
 
+        if not db_key and not search_regex:
+            raise Exception("both key and search_regex can't be empty")
+
+        query_response = database.query(
+            key=db_key, regex_string=search_regex,
+            page_id=request.page_id, items_per_page=request.items_per_page)
+
+        response_db_items = None
+        total_pages = 1
+        page_id = 0
+
+        if query_response is not None:
+            response_db_items = [ResponseDatabaseItem(
+                **item.__dict__) for item in query_response.items]
+
+            total_pages = query_response.total_pages
+            page_id = query_response.page_id
+
+        response = Response(
+            value=response_db_items,
+            total_pages=total_pages,
+            page_id=page_id)
+
+        return Packet(type=PacketTypeEnum.RESPONSE, content=PacketContent(response=response))
+
+    def __process_set_request(self, database: Database, request: Request):
+        db_key = request.key
+        db_value = request.value
+
+        if not db_key:
+            raise Exception("can't set None db key")
+
+        database.set(
+            key=db_key, value=db_value, ttl=request.ttl)
+
+        return Packet(type=PacketTypeEnum.SUCCESS)
+
+    def __process_request(self, packet_type: PacketTypeEnum, request: Request):
         database_id = request.database_id
 
         if database_id is None:
@@ -55,59 +93,19 @@ class Server:
             self.__databases[database_id] = Database()
 
         database_for_id = self.__databases[database_id]
-        db_key = request.key
 
         self.__logger.debug(
             f"got packet with type {packet_type.name} -> {request}")
 
         match packet_type:
             case PacketTypeEnum.QUERY:
-                search_regex = request.search_regex
-
-                if not db_key and not search_regex:
-                    raise Exception("both key and search_regex can't be empty")
-
-                query_response = database_for_id.query(
-                    key=db_key, regex_string=search_regex,
-                    page_id=request.page_id, items_per_page=request.items_per_page)
-
-                response_db_items = None
-                total_pages = 1
-                page_id = 0
-
-                if query_response is not None:
-                    response_db_items = [ResponseDatabaseItem(
-                        **item.__dict__) for item in query_response.items]
-
-                    total_pages = query_response.total_pages
-                    page_id = query_response.page_id
-
-                response_packet_type = PacketTypeEnum.RESPONSE
-                response_packet_reponse = Response(
-                    value=response_db_items,
-                    total_pages=total_pages,
-                    page_id=page_id)
+                return self.__process_query_request(database=database_for_id, request=request)
 
             case PacketTypeEnum.SET:
-                db_value = request.value
-
-                if not db_key:
-                    raise Exception("can't set None db key")
-
-                database_for_id.set(
-                    key=db_key, value=db_value, ttl=request.ttl)
-
-                response_packet_type = PacketTypeEnum.SUCCESS
+                return self.__process_set_request(database=database_for_id, request=request)
 
             case _:
                 raise Exception("unsupported packet type")
-
-        response_packet = Packet(type=response_packet_type, content=PacketContent(
-            response=response_packet_reponse))
-
-        self.__logger.debug(f"response: {response_packet}")
-
-        return response_packet
 
     async def __client_handler(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         addr = writer.get_extra_info('peername')
