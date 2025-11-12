@@ -2,10 +2,10 @@ from typing import Any
 from contextlib import contextmanager
 import socket
 import time
-from whimdb.core import Logger, Packet
+from whimdb.core import Packet
 from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent, \
     Request, ResponseDatabaseItem, Response
-from whimdb.core.utils import communication
+from whimdb.core.utils import communication, Logger
 
 
 class Client:

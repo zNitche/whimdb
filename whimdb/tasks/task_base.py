@@ -1,4 +1,4 @@
-from whimdb.core import Logger
+from whimdb.core.utils import Logger
 
 
 class TaskBase:
