@@ -2,7 +2,7 @@ from typing import Any
 import re
 import math
 import time
-from whimdb.dataclasses import DatabaseItem, DatabaseQueryResponse
+from whimdb.dataclasses.database import DatabaseItem, DatabaseQueryResponse
 
 
 class Database:

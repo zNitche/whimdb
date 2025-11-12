@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from whimdb.dataclasses import DatabaseItem
+from whimdb.dataclasses.database import DatabaseItem
 
 
 @dataclass
