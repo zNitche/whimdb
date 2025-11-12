@@ -85,6 +85,19 @@ class Client:
 
         return response_packet.type
 
+    def remove(self, key: str):
+        request_content = Request(key=key, database_id=self.database_id)
+
+        packet = Packet(type=PacketTypeEnum.REMOVE,
+                        content=PacketContent(request=request_content))
+
+        response_packet = self.__send_packet(packet=packet)
+
+        if not response_packet:
+            return None
+
+        return response_packet.type
+
     def __response_post_processing(self, response: Response | None):
         if not response or not response.value:
             return None

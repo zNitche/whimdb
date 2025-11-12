@@ -18,6 +18,10 @@ class Database:
 
         self.__content[key] = DatabaseItem(
             value=value, created_at=created_at, ttl=ttl)
+        
+    def remove(self, key: str):
+        if key in self.__content.keys():
+            del self.__content[key]
 
     def query(self, key: str | None = None,
               regex_string: str | None = None,

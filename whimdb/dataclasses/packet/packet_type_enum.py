@@ -7,3 +7,4 @@ class PacketTypeEnum(Enum):
     QUERY = 2
     SET = 3
     RESPONSE = 4
+    REMOVE = 5

@@ -80,6 +80,16 @@ class Server:
 
         return Packet(type=PacketTypeEnum.SUCCESS)
 
+    def __process_remove_request(self, database: Database, request: Request):
+        db_key = request.key
+
+        if not db_key:
+            raise Exception("can't remove None db key")
+
+        database.remove(key=db_key)
+
+        return Packet(type=PacketTypeEnum.SUCCESS)
+
     def __process_request(self, packet_type: PacketTypeEnum, request: Request):
         database_id = request.database_id
 
@@ -103,6 +113,9 @@ class Server:
 
             case PacketTypeEnum.SET:
                 return self.__process_set_request(database=database_for_id, request=request)
+            
+            case PacketTypeEnum.REMOVE:
+                return self.__process_remove_request(database=database_for_id, request=request)
 
             case _:
                 raise Exception("unsupported packet type")
