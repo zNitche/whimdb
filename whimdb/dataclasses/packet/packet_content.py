@@ -1,7 +1,7 @@
 from typing import Any
 from dataclasses import dataclass
 from whimdb.dataclasses.mixins import SerializableObjectMixin
-from whimdb.dataclasses.packet import Response, Request
+from whimdb.dataclasses.communication import Response, Request
 
 
 @dataclass

@@ -3,8 +3,8 @@ from contextlib import contextmanager
 import socket
 import time
 from whimdb.core import Packet
-from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent, \
-    Request, ResponseDatabaseItem, Response
+from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent
+from whimdb.dataclasses.communication import Request, ResponseDatabaseItem, Response
 from whimdb.core.utils import communication, Logger
 
 
