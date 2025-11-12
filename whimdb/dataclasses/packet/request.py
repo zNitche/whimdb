@@ -10,3 +10,5 @@ class Request(SerializableObjectMixin):
     value: Any = None
     search_regex: str | None = None
     ttl: int | None = None
+    items_per_page: int = 20
+    page_id: int = 0

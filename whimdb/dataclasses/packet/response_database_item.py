@@ -9,4 +9,6 @@ class ResponseDatabaseItem(SerializableObjectMixin):
     created_at: int | float
     ttl: int | None
 
+
+    # set on client-side
     is_expired: bool | None = None

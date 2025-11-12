@@ -67,17 +67,26 @@ class Server:
                 if not db_key and not search_regex:
                     raise Exception("both key and search_regex can't be empty")
 
-                db_items = database_for_id.query(
-                    key=db_key, regex_string=search_regex)
+                query_response = database_for_id.query(
+                    key=db_key, regex_string=search_regex,
+                    page_id=request.page_id, items_per_page=request.items_per_page)
 
                 response_db_items = None
+                total_pages = 1
+                page_id = 0
 
-                if db_items is not None:
+                if query_response is not None:
                     response_db_items = [ResponseDatabaseItem(
-                        **item.__dict__) for item in db_items]
+                        **item.__dict__) for item in query_response.items]
+
+                    total_pages = query_response.total_pages
+                    page_id = query_response.page_id
 
                 response_packet_type = PacketTypeEnum.RESPONSE
-                response_packet_reponse = Response(value=response_db_items)
+                response_packet_reponse = Response(
+                    value=response_db_items,
+                    total_pages=total_pages,
+                    page_id=page_id)
 
             case PacketTypeEnum.SET:
                 db_value = request.value

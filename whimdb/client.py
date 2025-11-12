@@ -49,12 +49,16 @@ class Client:
         except TimeoutError:
             raise Exception(f"connection timeout (exceeded {self.__timeout}s)")
 
-    def query(self, key: str | None = None, search_regex: str | None = None):
+    def query(self, key: str | None = None, search_regex: str | None = None,
+              page_id: int = 0,
+              items_per_page: int = 10):
+
         if not key and not search_regex:
             raise Exception("both key and search_regex can't be empty")
 
         request_content = Request(
-            key=key, database_id=self.database_id, search_regex=search_regex)
+            key=key, database_id=self.database_id, search_regex=search_regex,
+            items_per_page=items_per_page, page_id=page_id)
 
         response_packet = self.__send_packet(packet=Packet(
             type=PacketTypeEnum.QUERY, content=PacketContent(request=request_content)))
@@ -85,7 +89,8 @@ class Client:
         if not response or not response.value:
             return None
 
-        return [self.__process_response_item(item) for item in response.value]
+        return Response(value=[self.__process_response_item(item) for item in response.value],
+                        total_pages=response.total_pages, page_id=response.page_id)
 
     def __process_response_item(self, value: Any):
         item = ResponseDatabaseItem(**value)
