@@ -5,7 +5,7 @@ import time
 from whimdb.core import Logger, Packet
 from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent, \
     Request, ResponseDatabaseItem, Response
-from whimdb.core import communication
+from whimdb.core.utils import communication
 
 
 class Client:

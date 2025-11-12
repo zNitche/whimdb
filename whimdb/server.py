@@ -3,7 +3,7 @@ from whimdb.core import Logger, Database, Packet
 from whimdb.tasks import ExpiredItemsCleanupTask
 from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent, \
     Request, Response, ResponseDatabaseItem
-from whimdb.core import communication
+from whimdb.core.utils import communication
 
 
 class Server:
