@@ -12,8 +12,9 @@ def run_client(client_id: int):
     print(f"started client {client_id}")
     start_time = time.time()
 
-    s_response = client.set(key=f"test_key_{client_id}", value="test_value")
-    s_response = client.set(key=f"test2_key_{client_id}", value="test2_value", ttl=10)
+    s_response = client.set(key=f"test_key_{client_id}", value=f"test_value_{client_id}")
+    s_response = client.set(key=f"test{client_id}_key_{client_id}",
+                            value=f"test{client_id}_value_{client_id}", ttl=10)
     q1_response = client.query(search_regex="(.*?)")
     q2_response = client.query(key=f"test_key_{client_id}")
 
