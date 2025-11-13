@@ -81,9 +81,9 @@ class Client:
         response_packet = self.__send_packet(packet=packet)
 
         if not response_packet:
-            return None
+            return False
 
-        return response_packet.type
+        return response_packet.type == PacketTypeEnum.SUCCESS
 
     def remove(self, key: str):
         request_content = Request(key=key, database_id=self.database_id)
@@ -94,9 +94,9 @@ class Client:
         response_packet = self.__send_packet(packet=packet)
 
         if not response_packet:
-            return None
+            return False
 
-        return response_packet.type
+        return response_packet.type == PacketTypeEnum.SUCCESS
 
     def __response_post_processing(self, response: Response | None):
         if not response or not response.value:
