@@ -23,6 +23,9 @@ class Database:
         if key in self.__content.keys():
             del self.__content[key]
 
+    def purge(self):
+        self.__content.clear()
+
     def query(self, key: str | None = None,
               regex_string: str | None = None,
               page_id: int = 0,

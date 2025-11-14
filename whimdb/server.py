@@ -89,6 +89,11 @@ class Server:
         database.remove(key=db_key)
 
         return Packet(type=PacketTypeEnum.SUCCESS)
+    
+    def __process_purge_request(self, database: Database):
+        database.purge()
+
+        return Packet(type=PacketTypeEnum.SUCCESS)
 
     def __process_request(self, packet_type: PacketTypeEnum, request: Request):
         database_id = request.database_id
@@ -116,6 +121,9 @@ class Server:
             
             case PacketTypeEnum.REMOVE:
                 return self.__process_remove_request(database=database_for_id, request=request)
+            
+            case PacketTypeEnum.PURGE:
+                return self.__process_purge_request(database=database_for_id)
 
             case _:
                 raise Exception("unsupported packet type")
@@ -129,7 +137,7 @@ class Server:
             packet = await communication.load_packet_from_stream(reader=reader)
 
             if not packet or not packet.content or not packet.content.request:
-                raise Exception("Packet or its content is None")
+                raise Exception("packet or its content is None")
 
             response_packet = self.__process_request(
                 packet_type=packet.type,

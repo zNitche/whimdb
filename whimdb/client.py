@@ -87,9 +87,19 @@ class Client:
 
     def remove(self, key: str):
         request_content = Request(key=key, database_id=self.database_id)
-
         packet = Packet(type=PacketTypeEnum.REMOVE,
                         content=PacketContent(request=request_content))
+
+        response_packet = self.__send_packet(packet=packet)
+
+        if not response_packet:
+            return False
+
+        return response_packet.type == PacketTypeEnum.SUCCESS
+    
+    def purge(self):
+        request_content = Request(database_id=self.database_id)
+        packet = Packet(type=PacketTypeEnum.PURGE, content=PacketContent(request=request_content))
 
         response_packet = self.__send_packet(packet=packet)
 

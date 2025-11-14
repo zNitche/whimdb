@@ -2,9 +2,11 @@ from enum import Enum
 
 
 class PacketTypeEnum(Enum):
-    ERROR = 0
-    SUCCESS = 1
-    QUERY = 2
-    SET = 3
-    RESPONSE = 4
-    REMOVE = 5
+    ECHO = 0
+    ERROR = 1
+    SUCCESS = 2
+    QUERY = 3
+    SET = 4
+    RESPONSE = 5
+    REMOVE = 6
+    PURGE = 7
