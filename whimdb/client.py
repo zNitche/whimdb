@@ -107,6 +107,16 @@ class Client:
             return False
 
         return response_packet.type == PacketTypeEnum.SUCCESS
+    
+    def echo(self):
+        packet = Packet(type=PacketTypeEnum.ECHO)
+
+        response_packet = self.__send_packet(packet=packet)
+
+        if not response_packet:
+            return False
+
+        return response_packet.type == PacketTypeEnum.ECHO
 
     def __response_post_processing(self, response: Response | None):
         if not response or not response.value:

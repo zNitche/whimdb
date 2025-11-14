@@ -94,6 +94,9 @@ class Server:
         database.purge()
 
         return Packet(type=PacketTypeEnum.SUCCESS)
+    
+    def __process_echo_package(self):
+        return Packet(type=PacketTypeEnum.ECHO)
 
     def __process_request(self, packet_type: PacketTypeEnum, request: Request):
         database_id = request.database_id
@@ -136,12 +139,19 @@ class Server:
 
             packet = await communication.load_packet_from_stream(reader=reader)
 
-            if not packet or not packet.content or not packet.content.request:
-                raise Exception("packet or its content is None")
+            if not packet:
+                raise Exception("packet is None")
+            
+            if packet.type == PacketTypeEnum.ECHO:
+                response_packet = self.__process_echo_package()
 
-            response_packet = self.__process_request(
-                packet_type=packet.type,
-                request=packet.content.request)
+            else:
+                if not packet.content or not packet.content.request:
+                    raise Exception("packet's content is None")
+
+                response_packet = self.__process_request(
+                    packet_type=packet.type,
+                    request=packet.content.request)
 
         except:
             self.__logger.exception(
