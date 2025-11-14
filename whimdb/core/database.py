@@ -1,4 +1,5 @@
 from typing import Any
+import copy
 import re
 import math
 import time
@@ -11,7 +12,7 @@ class Database:
 
     @property
     def content(self):
-        return self.__content
+        return copy.deepcopy(self.__content)
 
     def set(self, key: str, value: Any, ttl: int | None = None):
         created_at = time.time()
