@@ -50,8 +50,8 @@ class Client:
             raise Exception(f"connection timeout (exceeded {self.__timeout}s)")
 
     def query(self, key: str | None = None, search_regex: str | None = None,
-              page_id: int = 0,
-              items_per_page: int = 10):
+              page_id: int | None = None,
+              items_per_page: int | None = None):
 
         if not key and not search_regex:
             raise Exception("both key and search_regex can't be empty")

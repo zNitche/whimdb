@@ -29,8 +29,8 @@ class Database:
 
     def query(self, key: str | None = None,
               regex_string: str | None = None,
-              page_id: int = 0,
-              items_per_page: int = 20) -> DatabaseQueryResponse | None:
+              page_id: int | None = None,
+              items_per_page: int | None = None) -> DatabaseQueryResponse | None:
 
         if not key and not regex_string:
             raise Exception("both key and search_regex can't be empty")
@@ -47,6 +47,9 @@ class Database:
 
         results = [self.__content[key]
                    for key in self.__content.keys() if regex.search(key)]
+        
+        if page_id is None or items_per_page is None:
+            return DatabaseQueryResponse(items=results)
 
         total_pages, paginated_results = self.__paginate_items(
             items=results, page_id=page_id, items_per_page=items_per_page)

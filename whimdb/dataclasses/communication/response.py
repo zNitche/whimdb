@@ -7,8 +7,8 @@ from whimdb.dataclasses.communication import ResponseDatabaseItem
 @dataclass
 class Response(SerializableObjectMixin):
     value: list[ResponseDatabaseItem] | None
-    total_pages: int = 1
-    page_id: int = 0
+    total_pages: int | None = None
+    page_id: int | None = None
 
     def dump(self) -> dict[str, Any]:
         return {
