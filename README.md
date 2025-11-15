@@ -7,7 +7,7 @@ python3 examples/client.py
 ```
 
 ```
-pip3 install --editable .
+pytest -v ./tests
 ```
 
 ```
