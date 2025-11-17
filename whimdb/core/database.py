@@ -18,8 +18,8 @@ class Database:
         created_at = time.time()
 
         self.__content[key] = DatabaseItem(
-            value=value, created_at=created_at, ttl=ttl)
-        
+            key=key, value=value, created_at=created_at, ttl=ttl)
+
     def remove(self, key: str):
         if key in self.__content.keys():
             del self.__content[key]
@@ -47,7 +47,7 @@ class Database:
 
         results = [self.__content[key]
                    for key in self.__content.keys() if regex.search(key)]
-        
+
         if page_id is None or items_per_page is None:
             return DatabaseQueryResponse(items=results)
 
