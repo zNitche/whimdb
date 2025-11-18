@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Any
 from whimdb.dataclasses.mixins import SerializableObjectMixin
-from whimdb.dataclasses.communication import ResponseDatabaseItem
+from whimdb.dataclasses.communication import QueryItem
 
 
 @dataclass
 class Response(SerializableObjectMixin):
-    value: list[ResponseDatabaseItem] | None
+    value: list[QueryItem] | None
     total_pages: int | None = None
     page_id: int | None = None
 

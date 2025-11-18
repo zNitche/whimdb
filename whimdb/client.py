@@ -4,7 +4,7 @@ import socket
 import time
 from whimdb.core import Packet
 from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent
-from whimdb.dataclasses.communication import Request, ResponseDatabaseItem, Response
+from whimdb.dataclasses.communication import Request, QueryItem, Response
 from whimdb.core.utils import communication, Logger
 
 
@@ -96,10 +96,11 @@ class Client:
             return False
 
         return response_packet.type == PacketTypeEnum.SUCCESS
-    
+
     def purge(self):
         request_content = Request(database_id=self.database_id)
-        packet = Packet(type=PacketTypeEnum.PURGE, content=PacketContent(request=request_content))
+        packet = Packet(type=PacketTypeEnum.PURGE,
+                        content=PacketContent(request=request_content))
 
         response_packet = self.__send_packet(packet=packet)
 
@@ -107,7 +108,7 @@ class Client:
             return False
 
         return response_packet.type == PacketTypeEnum.SUCCESS
-    
+
     def echo(self):
         packet = Packet(type=PacketTypeEnum.ECHO)
 
@@ -126,7 +127,7 @@ class Client:
                         total_pages=response.total_pages, page_id=response.page_id)
 
     def __process_response_item(self, value: Any):
-        item = ResponseDatabaseItem(**value)
+        item = QueryItem(**value)
         current_time = time.time()
 
         is_expired = item.ttl is not None and (

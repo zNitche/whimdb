@@ -3,7 +3,7 @@ from whimdb.dataclasses.mixins import SerializableObjectMixin
 
 
 @dataclass
-class ResponseDatabaseItem(SerializableObjectMixin):
+class QueryItem(SerializableObjectMixin):
     key: str
     value: str
     created_at: int | float

@@ -2,7 +2,7 @@ import asyncio
 from whimdb.core import Database, Packet
 from whimdb.tasks import ExpiredItemsCleanupTask
 from whimdb.dataclasses.packet import PacketTypeEnum, PacketContent
-from whimdb.dataclasses.communication import Request, ResponseDatabaseItem, Response
+from whimdb.dataclasses.communication import Request, QueryItem, Response
 from whimdb.core.utils import communication, Logger
 
 
@@ -55,8 +55,8 @@ class Server:
         page_id = 0
 
         if query_response is not None:
-            response_db_items = [ResponseDatabaseItem(
-                **item.__dict__) for item in query_response.items]
+            response_db_items = [QueryItem(**item.__dict__)
+                                 for item in query_response.items]
 
             total_pages = query_response.total_pages
             page_id = query_response.page_id
@@ -89,12 +89,12 @@ class Server:
         database.remove(key=db_key)
 
         return Packet(type=PacketTypeEnum.SUCCESS)
-    
+
     def __process_purge_request(self, database: Database):
         database.purge()
 
         return Packet(type=PacketTypeEnum.SUCCESS)
-    
+
     def __process_echo_package(self):
         return Packet(type=PacketTypeEnum.ECHO)
 
@@ -121,10 +121,10 @@ class Server:
 
             case PacketTypeEnum.SET:
                 return self.__process_set_request(database=database_for_id, request=request)
-            
+
             case PacketTypeEnum.REMOVE:
                 return self.__process_remove_request(database=database_for_id, request=request)
-            
+
             case PacketTypeEnum.PURGE:
                 return self.__process_purge_request(database=database_for_id)
 
@@ -141,7 +141,7 @@ class Server:
 
             if not packet:
                 raise Exception("packet is None")
-            
+
             if packet.type == PacketTypeEnum.ECHO:
                 response_packet = self.__process_echo_package()
 
