@@ -1,6 +1,5 @@
 from whimdb import Client
-from whimdb.dataclasses.packet import PacketTypeEnum
-from whimdb.dataclasses.communication import ResponseDatabaseItem
+from whimdb.dataclasses.communication import QueryItem
 
 
 def test_echo(client: Client, server):
@@ -41,4 +40,4 @@ def test_query(client: Client, server):
 
     assert res != None
     assert len(res.value) == 1  # type: ignore
-    assert type(res.value[0]) == ResponseDatabaseItem  # type: ignore
+    assert type(res.value[0]) == QueryItem  # type: ignore
