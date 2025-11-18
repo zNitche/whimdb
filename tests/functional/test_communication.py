@@ -41,3 +41,22 @@ def test_query(client: Client, server):
     assert res != None
     assert len(res.value) == 1  # type: ignore
     assert type(res.value[0]) == QueryItem  # type: ignore
+
+
+def test_update_ttl(client: Client, server):
+    key = "test_update_ttl_key"
+    value = "test_update_ttl_value"
+
+    client.set(key=key, value=value, ttl=None)
+    client.update_ttl(key=key, ttl=30)
+
+    res = client.query(key=key)
+
+    assert res != None
+    assert len(res.value) == 1  # type: ignore
+
+    item = res.value[0] # type: ignore
+
+    assert item.ttl == 30
+    assert item.value == value
+
