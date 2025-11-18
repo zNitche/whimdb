@@ -12,7 +12,7 @@ lightweight in-memory, key-value databases server & client
 
 ### Features
 - client & async server
-- `query`, `set`, `remove`, `purge` commands
+- `query`, `set`, `remove`, `purge`, `update_ttl` commands
 - queries pagination
 - database items ttl (time to live) + auto removal of expired ones
 - support for multiple databases
