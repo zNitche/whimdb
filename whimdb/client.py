@@ -119,6 +119,19 @@ class Client:
 
         return response_packet.type == PacketTypeEnum.ECHO
 
+    def update_ttl(self, key: str, ttl: int):
+        packet_content = PacketContent(
+            request=Request(ttl=ttl, key=key, database_id=self.database_id))
+
+        packet = Packet(type=PacketTypeEnum.UPDATE_TTL, content=packet_content)
+
+        response_packet = self.__send_packet(packet=packet)
+
+        if not response_packet:
+            return False
+
+        return response_packet.type == PacketTypeEnum.SUCCESS
+
     def __response_post_processing(self, response: Response | None):
         if not response or not response.value:
             return None

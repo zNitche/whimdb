@@ -10,3 +10,4 @@ class PacketTypeEnum(Enum):
     RESPONSE = 5
     REMOVE = 6
     PURGE = 7
+    UPDATE_TTL = 8

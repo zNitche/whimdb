@@ -98,6 +98,16 @@ class Server:
     def __process_echo_package(self):
         return Packet(type=PacketTypeEnum.ECHO)
 
+    def __process_update_ttl_request(self, database: Database, request: Request):
+        db_key = request.key
+
+        if not db_key:
+            raise Exception("can't remove None db key")
+
+        database.update_ttl(key=db_key, ttl=request.ttl)
+
+        return Packet(type=PacketTypeEnum.SUCCESS)
+
     def __process_request(self, packet_type: PacketTypeEnum, request: Request):
         database_id = request.database_id
 
@@ -127,6 +137,10 @@ class Server:
 
             case PacketTypeEnum.PURGE:
                 return self.__process_purge_request(database=database_for_id)
+
+            case PacketTypeEnum.UPDATE_TTL:
+                return self.__process_update_ttl_request(database=database_for_id,
+                                                         request=request)
 
             case _:
                 raise Exception("unsupported packet type")

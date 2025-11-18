@@ -24,6 +24,12 @@ class Database:
         if key in self.__content.keys():
             del self.__content[key]
 
+    def update_ttl(self, key: str, ttl: int | None):
+        item = self.__content.get(key)
+
+        if item:
+            item.ttl = ttl
+
     def purge(self):
         self.__content.clear()
 
