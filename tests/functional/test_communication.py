@@ -60,3 +60,22 @@ def test_update_ttl(client: Client, server):
     assert item.ttl == 30
     assert item.value == value
 
+
+def test_query_pages(client: Client, server):
+    client.purge()
+
+    # 8 pages with 15 items + 1 page with 8
+    for id in range(128):
+        client.set(key=f"key_{id}", value=f"value_{id}")
+
+    queried_pages = 0
+    queried_items = 0
+
+    for page in client.query_pages(search_regex="(.*?)", items_per_page=15):
+        assert page != None
+        
+        queried_pages += 1
+        queried_items += len(page)
+
+    assert queried_pages == 9
+    assert queried_items == 128
