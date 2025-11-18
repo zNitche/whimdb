@@ -71,6 +71,26 @@ class Client:
 
         return response
 
+    def query_pages(self, key: str | None = None, search_regex: str | None = None,
+                    items_per_page: int | None = None):
+
+        page_id = 0
+
+        while page_id is not None:
+            res = self.query(key=key, search_regex=search_regex,
+                             page_id=page_id, items_per_page=items_per_page)
+
+            if not res:
+                break
+
+            yield res.value
+
+            if res.page_id is None or res.total_pages is None:
+                break
+
+            next_page_id = res.page_id + 1
+            page_id = next_page_id if next_page_id < res.total_pages + 1 else None
+
     def set(self, key: str, value: Any | None, ttl: int | None = None):
         request_content = Request(
             key=key, database_id=self.database_id, value=value, ttl=ttl)
