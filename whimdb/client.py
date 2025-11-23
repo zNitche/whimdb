@@ -50,8 +50,8 @@ class Client:
             raise Exception(f"connection timeout (exceeded {self.__timeout}s)")
 
     def query(self, key: str | None = None, search_regex: str | None = None,
-              page_id: int | None = None,
-              items_per_page: int | None = None):
+              page_id: int | None = None, items_per_page: int | None = None,
+              remove_expired: bool = True):
 
         if not key and not search_regex:
             raise Exception("both key and search_regex can't be empty")
@@ -66,19 +66,20 @@ class Client:
         if not response_packet or not response_packet.content:
             return None
 
-        response = self.__response_post_processing(
-            response=response_packet.content.response)
+        response = self.__response_post_processing(response=response_packet.content.response,
+                                                   remove_expired=remove_expired)
 
         return response
 
     def query_pages(self, key: str | None = None, search_regex: str | None = None,
-                    items_per_page: int | None = None):
+                    items_per_page: int | None = None, remove_expired: bool = True):
 
         page_id = 0
 
         while page_id is not None:
             res = self.query(key=key, search_regex=search_regex,
-                             page_id=page_id, items_per_page=items_per_page)
+                             page_id=page_id, items_per_page=items_per_page,
+                             remove_expired=remove_expired)
 
             if not res:
                 break
@@ -152,12 +153,21 @@ class Client:
 
         return response_packet.type == PacketTypeEnum.SUCCESS
 
-    def __response_post_processing(self, response: Response | None):
+    def __response_post_processing(self, response: Response | None, remove_expired: bool):
         if not response or not response.value:
             return None
 
-        return Response(value=[self.__process_response_item(item) for item in response.value],
-                        total_pages=response.total_pages, page_id=response.page_id)
+        items = []
+
+        for raw_item in response.value:
+            item = self.__process_response_item(raw_item)
+
+            if remove_expired and item.is_expired:
+                continue
+
+            items.append(item)
+
+        return Response(value=items, total_pages=response.total_pages, page_id=response.page_id)
 
     def __process_response_item(self, value: Any):
         item = QueryItem(**value)
