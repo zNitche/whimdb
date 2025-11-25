@@ -178,6 +178,10 @@ class Client:
 
         item.is_expired = is_expired
 
+        if item.ttl is not None:
+            ttl_left = int(item.created_at + item.ttl - current_time)
+            item.ttl_left = ttl_left if ttl_left >= 0 else 0
+
         return item
 
     def __send_packet(self, packet: Packet):
