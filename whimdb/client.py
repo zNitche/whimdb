@@ -13,7 +13,7 @@ class Client:
                  database_id: int,
                  addr: str,
                  port: int,
-                 timeout: int = 2,
+                 timeout: int = 3,
                  debug: bool = False):
 
         self.__debug = debug
@@ -48,6 +48,25 @@ class Client:
 
         except TimeoutError:
             raise Exception(f"connection timeout (exceeded {self.__timeout}s)")
+
+    def __send_packet(self, packet: Packet):
+        response = None
+
+        with self.__socket_context() as socket:
+            try:
+                socket.sendall(packet.to_bytes())
+                self.__logger.debug("packet has been sent")
+
+                response = communication.load_packet_from_socket(
+                    socket=socket)
+
+            except:
+                self.__logger.exception("error while sending packet")
+
+        if response and response.type == PacketTypeEnum.ERROR:
+            raise Exception("received Error type packet")
+
+        return response
 
     def query(self, key: str | None = None, search_regex: str | None = None,
               page_id: int | None = None, items_per_page: int | None = None,
@@ -183,22 +202,3 @@ class Client:
             item.ttl_left = ttl_left if ttl_left >= 0 else 0
 
         return item
-
-    def __send_packet(self, packet: Packet):
-        response = None
-
-        with self.__socket_context() as socket:
-            try:
-                socket.sendall(packet.to_bytes())
-                self.__logger.debug("packet has been sent")
-
-                response = communication.load_packet_from_socket(
-                    socket=socket)
-
-            except:
-                self.__logger.exception("error while sending packet")
-
-        if response and response.type == PacketTypeEnum.ERROR:
-            raise Exception("received Error type packet")
-
-        return response
