@@ -10,6 +10,14 @@ class Response(SerializableObjectMixin):
     total_pages: int | None = None
     page_id: int | None = None
 
+    @staticmethod
+    def get_defaults():
+        return {
+            "value": None,
+            "total_pages": None,
+            "page_id": None
+        }
+
     def dump(self) -> dict[str, Any]:
         return {
             "value": [item.dump() for item in self.value] if self.value else None,

@@ -12,3 +12,15 @@ class Request(SerializableObjectMixin):
     ttl: int | None = None
     items_per_page: int | None = None
     page_id: int | None = None
+
+    @staticmethod
+    def get_defaults():
+        return {
+            "database_id": None,
+            "key": None,
+            "value": None,
+            "search_regex": None,
+            "ttl": None,
+            "items_per_page": None,
+            "page_id": None,
+        }

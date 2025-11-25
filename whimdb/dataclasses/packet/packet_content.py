@@ -19,12 +19,12 @@ class PacketContent(SerializableObjectMixin):
         }
 
     @staticmethod
-    def load(**kwargs):
+    def loads(**kwargs):
         raw_response = kwargs.get("response")
         raw_request = kwargs.get("request")
 
-        response = Response(**raw_response) if raw_response else None
-        request = Request(**raw_request) if raw_request else None
+        response = Response.load(**raw_response) if raw_response else None
+        request = Request.load(**raw_request) if raw_request else None
 
         return PacketContent(
             response=response,

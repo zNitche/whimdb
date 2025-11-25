@@ -7,8 +7,10 @@ class Packet:
     def __init__(self, type: PacketTypeEnum,
                  content: PacketContent | None = None):
 
-        self.type = type
-        self.content = content
+        self.type: PacketTypeEnum = type
+        self.content: PacketContent | None = content
+
+        self.buff_size: int | None = None
 
     @staticmethod
     def from_bytes(buff: bytes):
@@ -20,8 +22,12 @@ class Packet:
 
         body = buff[packet_type_length:].decode()
 
-        packet_content = PacketContent.load(**json.loads(body))
-        return Packet(type=packet_type, content=packet_content)
+        packet_content = PacketContent.loads(**json.loads(body))
+
+        packet = Packet(type=packet_type, content=packet_content)
+        packet.buff_size = len(buff)
+
+        return packet
         
     
     def to_bytes(self):

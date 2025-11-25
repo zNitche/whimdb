@@ -170,7 +170,7 @@ class Client:
         return Response(value=items, total_pages=response.total_pages, page_id=response.page_id)
 
     def __process_response_item(self, value: Any):
-        item = QueryItem(**value)
+        item = QueryItem.load(**value)
         current_time = time.time()
 
         is_expired = item.ttl is not None and (
