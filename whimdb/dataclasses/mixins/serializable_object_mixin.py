@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass
 class SerializableObjectMixin:
-    def dump(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = {}
 
         for key, value in self.__dict__.items():
@@ -19,7 +19,7 @@ class SerializableObjectMixin:
         raise NotImplementedError()
     
     @classmethod
-    def load(cls, **kwargs):
+    def from_dict(cls, **kwargs):
         target_kwargs = {}
         inital_dict = cls.get_defaults()
 

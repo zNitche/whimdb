@@ -55,7 +55,7 @@ class Server:
         page_id = 0
 
         if query_response is not None:
-            response_db_items = [QueryItem.load(**item.__dict__)
+            response_db_items = [QueryItem.from_dict(**item.__dict__)
                                  for item in query_response.items]
 
             total_pages = query_response.total_pages

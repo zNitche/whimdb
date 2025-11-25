@@ -14,8 +14,8 @@ class PacketContent(SerializableObjectMixin):
 
     def dump(self) -> dict[str, Any]:
         return {
-            "response": self.response.dump() if self.response else None,
-            "request": self.request.dump() if self.request else None
+            "response": self.response.to_dict() if self.response else None,
+            "request": self.request.to_dict() if self.request else None
         }
 
     @staticmethod
@@ -23,8 +23,8 @@ class PacketContent(SerializableObjectMixin):
         raw_response = kwargs.get("response")
         raw_request = kwargs.get("request")
 
-        response = Response.load(**raw_response) if raw_response else None
-        request = Request.load(**raw_request) if raw_request else None
+        response = Response.from_dict(**raw_response) if raw_response else None
+        request = Request.from_dict(**raw_request) if raw_request else None
 
         return PacketContent(
             response=response,

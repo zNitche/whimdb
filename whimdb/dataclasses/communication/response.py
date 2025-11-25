@@ -18,9 +18,9 @@ class Response(SerializableObjectMixin):
             "page_id": None
         }
 
-    def dump(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
-            "value": [item.dump() for item in self.value] if self.value else None,
+            "value": [item.to_dict() for item in self.value] if self.value else None,
             "total_pages": self.total_pages,
             "page_id": self.page_id
         }
