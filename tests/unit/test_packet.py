@@ -3,7 +3,11 @@ from tests import mocks
 
 
 def test_load_packet():
+    packet_size = len(mocks.PACKET_BUFF)
+
     packet = Packet.from_bytes(mocks.PACKET_BUFF)
+
+    assert packet.buff_size == packet_size
 
     assert packet.type == mocks.PACKET.type
     assert packet.content == mocks.PACKET.content
