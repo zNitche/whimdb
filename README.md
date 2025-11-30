@@ -10,6 +10,8 @@ lightweight in-memory, key-value databases server & client
 |---------|---------|---------|
 | 4 bytes | 2 bytes | x bytes |
 
+max packet size up to 5MB
+
 ### Features
 - client & async server
 - `query`, `set`, `remove`, `purge`, `update_ttl` commands
