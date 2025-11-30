@@ -13,13 +13,21 @@ class Server:
         self.__addr = addr
         self.__port = port
 
-        self.__events_loop = asyncio.get_event_loop()
+        self.__events_loop = self.__get_event_loop()
         self.__server_mainloop = self.__get_server_mainloop()
 
         self.__logger = Logger(logger_name="SERVER")
         self.__logger.init(debug=self.__debug)
 
         self.__databases: dict[int, Database] = {}
+
+    def __get_event_loop(self):
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            asyncio.set_event_loop(asyncio.new_event_loop())
+
+            return asyncio.get_event_loop()
 
     def __get_server_mainloop(self):
         limit_in_bytes = 5242880  # 5MB
