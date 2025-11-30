@@ -10,10 +10,14 @@ def server():
 
     # wait for server to come online
     while True:
-        res = client.echo()
+        try:
+            res = client.echo()
 
-        if res:
-            break
+            if res:
+                break
+
+        except ConnectionRefusedError:
+            pass
 
         time.sleep(1)
 
