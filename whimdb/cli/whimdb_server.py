@@ -16,7 +16,7 @@ def get_args():
         "--addr", type=str, default="0.0.0.0", help="server address", required=False)
 
     argument_parser.add_argument("--debug", action=argparse.BooleanOptionalAction,
-                                 type=bool, default=False, help="debug mode", required=False)
+                                 default=False, help="debug mode", required=False)
 
     return argument_parser.parse_args()
 
