@@ -4,3 +4,4 @@ whimdb.egg-info/
 dist/
 .pytest_cache/
 *.pem
+build/*
