@@ -7,7 +7,7 @@ class QueryItem(SerializableObjectMixin):
     key: str
     value: str
     created_at: int | float
-    ttl: int | None
+    valid_till: int | float | None
 
     # set on client-side
     is_expired: bool | None = None
@@ -19,7 +19,7 @@ class QueryItem(SerializableObjectMixin):
             "key": None,
             "value": None,
             "created_at": None,
-            "ttl": None,
+            "valid_till": None,
             "is_expired": None,
             "ttl_left": None,
         }

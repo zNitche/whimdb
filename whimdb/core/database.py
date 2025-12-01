@@ -16,9 +16,11 @@ class Database:
 
     def set(self, key: str, value: Any, ttl: int | None = None):
         created_at = time.time()
+        valid_till = created_at + ttl if ttl else None
 
         self.__content[key] = DatabaseItem(
-            key=key, value=value, created_at=created_at, ttl=ttl)
+            key=key, value=value, created_at=created_at,
+            valid_till=valid_till)
 
     def remove(self, key: str):
         if key in self.__content.keys():
@@ -28,7 +30,7 @@ class Database:
         item = self.__content.get(key)
 
         if item:
-            item.ttl = ttl
+            item.valid_till = time.time() + ttl if ttl else None
 
     def purge(self):
         self.__content.clear()

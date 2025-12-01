@@ -7,4 +7,4 @@ class DatabaseItem:
     key: str
     value: Any
     created_at: int | float
-    ttl: int | None
+    valid_till: int | float | None
