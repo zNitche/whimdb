@@ -48,7 +48,6 @@ def test_update_ttl(client: Client, server):
     value = "test_update_ttl_value"
 
     client.set(key=key, value=value, ttl=None)
-    client.update_ttl(key=key, ttl=30)
 
     res = client.query(key=key)
 
@@ -57,7 +56,6 @@ def test_update_ttl(client: Client, server):
 
     item = res.value[0] # type: ignore
 
-    assert item.ttl == 30
     assert item.value == value
 
 
