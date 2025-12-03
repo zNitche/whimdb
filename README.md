@@ -39,6 +39,27 @@ whimdb-server --port 8080
 ### Examples
 `Client` and `Server` example scripts can be found in `/examples` directory.
 
+### Docker usage
+
+##### Dockerfile.whimdb
+```
+FROM python:3.12-slim
+
+RUN pip3 install git+https://github.com/zNitche/whimdb.git@v1.2.3
+```
+
+##### docker-compose.yml
+```
+services:
+  whimdb:
+    command: whimdb-server --port 6000
+    container_name: whimdb
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.whimdb
+```
+
 ### Tests
 project's test suit can be run via
 
