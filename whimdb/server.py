@@ -16,7 +16,7 @@ class Server:
         self.__events_loop = self.__get_event_loop()
         self.__server_mainloop = self.__get_server_mainloop()
 
-        self.__logger = Logger(logger_name="SERVER")
+        self.__logger = Logger(logger_name="whimdb-server")
         self.__logger.init(debug=self.__debug)
 
         self.__databases: dict[int, Database] = {}

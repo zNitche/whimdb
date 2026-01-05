@@ -19,7 +19,7 @@ class Client:
         self.__debug = debug
         self.__timeout = timeout
 
-        self.__logger = Logger()
+        self.__logger = Logger(logger_name="whimdb-client")
         self.__logger.init(debug=self.__debug)
 
         self.database_id = database_id
