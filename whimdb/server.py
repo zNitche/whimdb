@@ -157,7 +157,7 @@ class Server:
         addr = writer.get_extra_info('peername')
 
         try:
-            self.__logger.info(f"connection from {addr}")
+            self.__logger.debug(f"connection from {addr}")
 
             packet = await communication.load_packet_from_stream(reader=reader)
 
@@ -195,7 +195,7 @@ class Server:
         writer.close()
         await writer.wait_closed()
 
-        self.__logger.info(f"connection with {addr} has been closed")
+        self.__logger.debug(f"connection with {addr} has been closed")
 
     def start(self):
         self.__logger.debug("debug mode enabled")
