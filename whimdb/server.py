@@ -204,7 +204,17 @@ class Server:
         self.__events_loop.create_task(self.__server_mainloop)
 
         self.__logger.info(f"running at port {self.__port}")
-        self.__events_loop.run_forever()
+
+        try:
+            self.__events_loop.run_forever()
+
+        except KeyboardInterrupt, SystemExit:
+            self.stop()
+            self.__logger.info("exiting")
+
+        except:
+            self.stop()
+            self.__logger.exception("events loop error")
 
     def stop(self):
         self.__events_loop.stop()
