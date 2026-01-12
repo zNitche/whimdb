@@ -208,7 +208,7 @@ class Server:
         try:
             self.__events_loop.run_forever()
 
-        except KeyboardInterrupt, SystemExit:
+        except (KeyboardInterrupt, SystemExit):
             self.stop()
             self.__logger.info("exiting")
 
