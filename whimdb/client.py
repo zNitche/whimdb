@@ -172,6 +172,21 @@ class Client:
 
         return response_packet.type == PacketTypeEnum.SUCCESS
 
+    def db_key_count(self) -> int:
+        packet_content = PacketContent(
+            request=Request(database_id=self.database_id))
+
+        packet = Packet(type=PacketTypeEnum.KEY_COUNT, content=packet_content)
+        response_packet = self.__send_packet(packet=packet)
+
+        if not response_packet or not response_packet.content:
+            raise Exception("response packet is None")
+
+        if not response_packet.content.response or not response_packet.content.response.message:
+            raise Exception("packet response is None")
+
+        return int(response_packet.content.response.message)
+
     def __response_post_processing(self, response: Response | None, remove_expired: bool):
         if not response or not response.value:
             return None
