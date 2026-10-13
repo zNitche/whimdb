@@ -77,3 +77,16 @@ def test_query_pages(client: Client, server):
 
     assert queried_pages == 9
     assert queried_items == 128
+
+
+def test_key_count(client: Client, server):
+    TARGET_KEY_COUNT = 21
+
+    client.purge()
+
+    for id in range(TARGET_KEY_COUNT):
+        client.set(key=f"key_{id}", value=f"value_{id}")
+
+    key_count = client.db_key_count()
+
+    assert key_count == TARGET_KEY_COUNT
