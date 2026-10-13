@@ -14,7 +14,7 @@ max packet size up to 5MB
 
 ### Features
 - client & async server
-- `query`, `set`, `remove`, `purge`, `update_ttl` commands
+- `query`, `set`, `remove`, `purge`, `update_ttl`, `echo`, `db_key_count` commands
 - queries pagination
 - database items ttl (time to live) + auto removal of expired ones
 - support for multiple databases
