@@ -44,7 +44,7 @@ class Server:
         for task in tasks:
             self.__events_loop.create_task(task.run())
 
-            self.__logger.info(
+            self.__logger.debug(
                 f"added background task: {task.__class__.__name__}")
 
     def __process_query_request(self, database: Database, request: Request):
