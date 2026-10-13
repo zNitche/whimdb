@@ -6,21 +6,24 @@ from whimdb.dataclasses.communication import QueryItem
 
 @dataclass
 class Response(SerializableObjectMixin):
-    value: list[QueryItem] | None
+    value: list[QueryItem] | None = None
     total_pages: int | None = None
     page_id: int | None = None
+    message: str | None = None
 
     @staticmethod
     def get_defaults():
         return {
             "value": None,
             "total_pages": None,
-            "page_id": None
+            "page_id": None,
+            "message": None,
         }
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "value": [item.to_dict() for item in self.value] if self.value else None,
             "total_pages": self.total_pages,
-            "page_id": self.page_id
+            "page_id": self.page_id,
+            "message": self.message,
         }

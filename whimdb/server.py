@@ -116,6 +116,11 @@ class Server:
 
         return Packet(type=PacketTypeEnum.SUCCESS)
 
+    def __process_key_count_request(self, database: Database):
+        response = Response(message=str(database.key_count))
+
+        return Packet(type=PacketTypeEnum.KEY_COUNT, content=PacketContent(response=response))
+
     def __process_request(self, packet_type: PacketTypeEnum, request: Request):
         database_id = request.database_id
 
@@ -149,6 +154,9 @@ class Server:
             case PacketTypeEnum.UPDATE_TTL:
                 return self.__process_update_ttl_request(database=database_for_id,
                                                          request=request)
+
+            case PacketTypeEnum.KEY_COUNT:
+                return self.__process_key_count_request(database=database_for_id)
 
             case _:
                 raise Exception("unsupported packet type")

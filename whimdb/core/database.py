@@ -13,6 +13,10 @@ class Database:
     @property
     def content(self):
         return copy.deepcopy(self.__content)
+    
+    @property
+    def key_count(self):
+        return len(self.content.keys())
 
     def set(self, key: str, value: Any, ttl: int | None = None):
         created_at = time.time()

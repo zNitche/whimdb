@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class PacketTypeEnum(Enum):
     ECHO = 0
     ERROR = 1
@@ -11,3 +10,4 @@ class PacketTypeEnum(Enum):
     REMOVE = 6
     PURGE = 7
     UPDATE_TTL = 8
+    KEY_COUNT = 9
