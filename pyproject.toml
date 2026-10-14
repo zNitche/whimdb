@@ -7,7 +7,7 @@ exclude = ["examples*", "tests*"]
 
 [project]
 name = "whimdb"
-version = "1.2.7"
+dynamic = ["version"]
 authors = [
   { name = "zNitche" },
 ]
@@ -20,6 +20,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 requires-python = ">=3.10"
+
+[tool.setuptools.dynamic]
+version = {attr = "whimdb.__version__"}
 
 [project.scripts]
 whimdb-server = "whimdb.cli.whimdb_server:run"
