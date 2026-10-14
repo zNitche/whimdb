@@ -72,3 +72,20 @@ pip3 install -r requirements/tests.txt
 ```
 pytest -v tests/
 ```
+
+### Development
+##### create virtual environment
+```
+python3 -m venv .venv
+source ./venv/bin/activate
+```
+
+##### install package in dev mode
+```
+pip3 install -e .
+```
+
+##### add venv bin to PATH
+```
+export PATH=".venv/bin:$PATH"
+```
