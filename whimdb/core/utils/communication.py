@@ -24,8 +24,17 @@ async def read_from_stream(reader: asyncio.StreamReader, length: int,
 
 def read_from_socket(socket: socket.socket, length: int,
                      raise_exception: bool = True) -> bytes:
+    data = bytearray()
 
-    data = socket.recv(length)
+    while len(data) < length:
+        chunk = socket.recv(length - len(data))
+
+        if not chunk:
+            raise Exception("error while reading socket data chunk")
+
+        data.extend(chunk)
+
+    data = bytes(data)
 
     if raise_exception and (len(data) < length):
         raise Exception(
