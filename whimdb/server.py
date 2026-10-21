@@ -56,7 +56,8 @@ class Server:
 
         query_response = database.query(
             key=db_key, regex_string=search_regex,
-            page_id=request.page_id, items_per_page=request.items_per_page)
+            page_id=request.page_id, items_per_page=request.items_per_page,
+            keys_only=request.keys_only if request.keys_only else False)
 
         response_db_items = None
         total_pages = 1

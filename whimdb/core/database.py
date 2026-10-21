@@ -13,7 +13,7 @@ class Database:
     @property
     def content(self):
         return copy.deepcopy(self.__content)
-    
+
     @property
     def key_count(self):
         return len(self.content.keys())
@@ -42,7 +42,8 @@ class Database:
     def query(self, key: str | None = None,
               regex_string: str | None = None,
               page_id: int | None = None,
-              items_per_page: int | None = None) -> DatabaseQueryResponse | None:
+              items_per_page: int | None = None,
+              keys_only: bool = False) -> DatabaseQueryResponse | None:
 
         if not key and not regex_string:
             raise Exception("both key and search_regex can't be empty")
@@ -57,7 +58,7 @@ class Database:
 
         regex = re.compile(fr"{regex_string}")
 
-        results = [self.__content[key]
+        results = [self.__get_db_item(key, key_only=keys_only)
                    for key in self.__content.keys() if regex.search(key)]
 
         if page_id is None or items_per_page is None:
@@ -81,3 +82,12 @@ class Database:
         limit = offset + items_per_page
 
         return total_pages, items[offset:limit]
+
+    def __get_db_item(self, key: str, key_only: bool = False) -> DatabaseItem:
+        if not key_only:
+            return self.__content[key]
+        
+        i = copy.copy(self.__content[key])
+        i.value = None
+
+        return i

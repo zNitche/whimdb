@@ -10,6 +10,7 @@ class Request(SerializableObjectMixin):
     value: str | int | bool | dict | None = None
     search_regex: str | None = None
     ttl: int | None = None
+    keys_only: bool | None = None
     items_per_page: int | None = None
     page_id: int | None = None
 
@@ -23,4 +24,5 @@ class Request(SerializableObjectMixin):
             "ttl": None,
             "items_per_page": None,
             "page_id": None,
+            "keys_only": False,
         }

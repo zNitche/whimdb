@@ -70,14 +70,14 @@ class Client:
 
     def query(self, key: str | None = None, search_regex: str | None = None,
               page_id: int | None = None, items_per_page: int | None = None,
-              remove_expired: bool = True):
+              remove_expired: bool = True, keys_only: bool = False):
 
         if not key and not search_regex:
             raise Exception("both key and search_regex can't be empty")
 
         request_content = Request(
             key=key, database_id=self.database_id, search_regex=search_regex,
-            items_per_page=items_per_page, page_id=page_id)
+            items_per_page=items_per_page, page_id=page_id, keys_only=keys_only)
 
         response_packet = self.__send_packet(packet=Packet(
             type=PacketTypeEnum.QUERY, content=PacketContent(request=request_content)))
