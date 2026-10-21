@@ -12,11 +12,11 @@ def run_client(client_id: int):
     print(f"started client {client_id}")
     start_time = time.time()
 
-    s_response = client.set(key=f"test_key_{client_id}", value=f"test_value_{client_id}")
-    s_response = client.set(key=f"test{client_id}_key_{client_id}",
+    client.set(key=f"test_key_{client_id}", value=f"test_value_{client_id}")
+    client.set(key=f"test{client_id}_key_{client_id}",
                             value=f"test{client_id}_value_{client_id}", ttl=10)
-    q1_response = client.query(search_regex="(.*?)")
-    q2_response = client.query(key=f"test_key_{client_id}")
+    client.query(search_regex="(.*?)")
+    client.query(key=f"test_key_{client_id}")
 
     end_time = round(time.time() - start_time, 2)
     print(f"[{client_id}] request took: {end_time}")
@@ -31,6 +31,9 @@ def main():
     
     for thread in clients_threads:
         thread.start()
+
+    for thread in clients_threads:
+        thread.join()
 
 
 if __name__ == "__main__":
