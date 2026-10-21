@@ -7,7 +7,7 @@ from whimdb.dataclasses.mixins import SerializableObjectMixin
 class Request(SerializableObjectMixin):
     database_id: int
     key: str | None = None
-    value: Any = None
+    value: str | int | bool | dict | None = None
     search_regex: str | None = None
     ttl: int | None = None
     items_per_page: int | None = None
