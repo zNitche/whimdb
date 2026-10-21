@@ -64,3 +64,24 @@ def test_key_count(client: Client, server):
     key_count = client.db_key_count()
 
     assert key_count == TARGET_KEY_COUNT
+
+
+def test_query_only_keys(client: Client, server):
+    def run(response, only_keys):
+        assert response is not None
+        assert response.value is not None
+
+        for id, item in enumerate(response.value):
+            assert item.key == f"key_{id}"
+            assert item.value == None if only_keys else f"value_{id}"
+
+    client.purge()
+
+    for id in range(100):
+        client.set(key=f"key_{id}", value=f"value_{id}")
+
+    response_base = client.query(search_regex="(.*?)", keys_only=False)
+    response_keys_only = client.query(search_regex="(.*?)", keys_only=True)
+
+    run(response=response_base, only_keys=False)
+    run(response=response_keys_only, only_keys=True)
